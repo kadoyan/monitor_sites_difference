@@ -5,6 +5,7 @@ const fs = require("fs")
 
 const URL = "http://www.yodobashi.com/product/100000001003431566/"
 const ELM = "js_buyBoxMain"
+const FILE = "element.txt"
 
 http.get(URL, (res) => {
 	const { statusCode } = res
@@ -26,11 +27,28 @@ http.get(URL, (res) => {
 	})
 	res.on("end", () => {//終わったら
 		const reg = new RegExp('<div\\sid=\\"'+ ELM +'\\b[^<]*(?:(?!<\\/div>)<[^<]*)*<\\/div>');
-		const target = rawData.match(reg)[0] || ""
-//console.log()
-		fs.writeFile("element.txt", target, function(err) {
+		const current = rawData.match(reg)[0] || ""
+		let previous = ""
+		try {
+			previous = fs.readFileSync(FILE).toString()
+		} catch (err) {
+			if (err.code === 'ENOENT') {
+				console.log('File not found.')
+			} else {
+				throw err
+			}
+		}
+//console.log("previous=", previous)
+		
+		if (previous === current) {
+//console.log("Same")
+		} else {
+//console.log("DIFFERENCE")
+		}
+		
+		fs.writeFile(FILE, current, (err) => {
 			if (err) throw err;
-			console.log('Saved!');
+//console.log('Saved!');
 		})
 	})
 })
