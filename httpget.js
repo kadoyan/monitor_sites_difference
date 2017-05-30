@@ -1,7 +1,5 @@
 "use strict"
 
-const http = require("http")
-const https = require("https")
 const fs = require("fs")
 const TwitterPackage = require("twitter")
 
@@ -22,8 +20,9 @@ const secret = {
 
 const Twitter = new TwitterPackage(secret)
 
-const detectDiff = function() {
-	http.get(URL, (res) => {
+const detectDiff = function(name, method, url, type, elm, file) {
+	const http = require(method)
+	http.get(url, (res) => {
 		const { statusCode } = res
 		const contentType = res.headers["content-type"]
 		
@@ -42,14 +41,14 @@ const detectDiff = function() {
 			rawData += chunk
 		})
 		res.on("end", () => {//終わったら
-			const reg = new RegExp('<div\\sid=\\"'+ ELM +'\\b[^<]*(?:(?!<\\/div>)<[^<]*)*<\\/div>');
+			const reg = new RegExp('<div\\s'+ type +'=\\"'+ elm +'\\b[^<]*(?:(?!<\\/div>)<[^<]*)*<\\/div>');
 			const current = rawData.match(reg)[0] || ""
 			let previous = ""
 			try {
-				previous = fs.readFileSync(FILE).toString()
+				previous = fs.readFileSync(file).toString()
 			} catch (err) {
 				if (err.code === 'ENOENT') {
-					console.log('File not found.')
+					console.log(`${file}: File not found.`)
 				} else {
 					throw err
 				}
@@ -57,7 +56,7 @@ const detectDiff = function() {
 			
 			let tweet = ""
 			if (previous !== current) {
-				tweet = `Yodobashi変化あり！ ${URL}`
+				tweet = `${name}変化あり！ ${url}`
 			}
 			
 			fs.writeFile(FILE, current, (err) => {
@@ -74,68 +73,13 @@ const detectDiff = function() {
 					}
 				});
 			} else {
-				console.log("ヨドバシ変化なし")
-			}
-		})
-	})
-	
-	https.get(NURL, (res) => {
-		const { statusCode } = res
-		const contentType = res.headers["content-type"]
-		
-		let error
-		if (statusCode !== 200) {
-			error = new Error(`Request Failed.\n` + `Status Code: ${statusCode}`)
-		}
-		if (error) {
-			console.error(error.message)
-			res.resume()
-			return
-		}
-		res.setEncoding("utf8")
-		let rawData = ""
-		res.on("data", (chunk) => {//データが来る度に蓄積させる
-			rawData += chunk
-		})
-		res.on("end", () => {//終わったら
-			const reg = new RegExp('<div\\sclass=\\"'+ NELM +'\\b[^<]*(?:(?!<\\/div>)<[^<]*)*<\\/div>');
-			const current = rawData.match(reg)[0] || ""
-			let previous = ""
-			try {
-				previous = fs.readFileSync(NFILE).toString()
-			} catch (err) {
-				if (err.code === 'ENOENT') {
-					console.log('File not found.')
-				} else {
-					throw err
-				}
-			}
-			
-			let tweet = ""
-			if (previous !== current) {
-				tweet = `Nintendo変化あり！ ${NURL}`
-			}
-			
-			fs.writeFile(NFILE, current, (err) => {
-				if (err) throw err;
-			})
-			
-			if (tweet !== "") {
-				Twitter.post('direct_messages/new', {
-						screen_name: "GetNSWonYodo",
-						text: tweet
-					}, function(err, tw, res){
-					if (err) {
-						console.log(err);
-					}
-				});
-			} else {
-				console.log("任天堂変化なし")
+				console.log(`${name}変化なし`)
 			}
 		})
 	})
 }
 
 setInterval(()=>{
-	detectDiff()
-}, 1000*60*10)
+	detectDiff("ヨドバシ.com", "http", URL, "id", ELM, FILE)
+	detectDiff("任天堂ストア", "https", NURL, "class", NELM, NFILE)
+}, 1000*60)
