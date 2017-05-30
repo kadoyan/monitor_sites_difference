@@ -1,0 +1,11 @@
+{
+  "name": "webpagediff",
+  "version": "0.1.0",
+  "description": "Detect the difference between the current and the previous version in the webpage.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kazuaki Kadoya",
+  "license": "ISC"
+}
