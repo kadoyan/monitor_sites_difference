@@ -20,7 +20,55 @@ const secret = {
 
 const Twitter = new TwitterPackage(secret)
 
-const detectDiff = function(name, method, url, type, elm, file) {
+const detectDiff = function(name, rawData) {
+	let reg
+	let file
+	let url
+	if (name === "ヨドバシ") {
+		url = URL
+		reg = new RegExp('<div\\sid=\\"'+ ELM +'\\b[^<]*(?:(?!<\\/div>)<[^<]*)*<\\/div>');
+		file = FILE
+	} else {
+		url = NURL
+		reg = new RegExp('<span\\sclass=\\"items\\">HAC_S_KAYAA\\/.');
+		file = NFILE
+	}
+	const current = rawData.match(reg)[0] || ""
+	let previous = ""
+	
+	try {
+		previous = fs.readFileSync(file).toString()
+	} catch (err) {
+		if (err.code === 'ENOENT') {
+			console.log(`${file}: File not found.`)
+		} else {
+			throw err
+		}
+	}
+	
+	let tweet = ""
+	if (previous !== current) {
+		tweet = `${name}変化あり！ ${url}`
+	}
+	
+	fs.writeFile(file, current, (err) => {
+		if (err) throw err;
+	})
+	
+	if (tweet !== "") {
+		Twitter.post('direct_messages/new', {
+				screen_name: "GetNSWonYodo",
+				text: tweet
+			}, function(err, tw, res){
+			if (err) {
+				console.log(err);
+			}
+		});
+	} else {
+		console.log(`${name}変化なし`)
+	}
+}
+const startCheck = function(name, method, url) {
 	const http = require(method)
 	http.get(url, (res) => {
 		const { statusCode } = res
@@ -41,45 +89,12 @@ const detectDiff = function(name, method, url, type, elm, file) {
 			rawData += chunk
 		})
 		res.on("end", () => {//終わったら
-			const reg = new RegExp('<div\\s'+ type +'=\\"'+ elm +'\\b[^<]*(?:(?!<\\/div>)<[^<]*)*<\\/div>');
-			const current = rawData.match(reg)[0] || ""
-			let previous = ""
-			try {
-				previous = fs.readFileSync(file).toString()
-			} catch (err) {
-				if (err.code === 'ENOENT') {
-					console.log(`${file}: File not found.`)
-				} else {
-					throw err
-				}
-			}
-			
-			let tweet = ""
-			if (previous !== current) {
-				tweet = `${name}変化あり！ ${url}`
-			}
-			
-			fs.writeFile(file, current, (err) => {
-				if (err) throw err;
-			})
-			
-			if (tweet !== "") {
-				Twitter.post('direct_messages/new', {
-						screen_name: "GetNSWonYodo",
-						text: tweet
-					}, function(err, tw, res){
-					if (err) {
-						console.log(err);
-					}
-				});
-			} else {
-				console.log(`${name}変化なし`)
-			}
+			detectDiff(name, rawData)
 		})
 	})
 }
 
 setInterval(()=>{
-	detectDiff("ヨドバシ.com", "http", URL, "id", ELM, FILE)
-	detectDiff("任天堂ストア", "https", NURL, "class", NELM, NFILE)
-}, 1000*60)
+	startCheck("ヨドバシ", "http", URL)
+	startCheck("任天堂", "https", NURL)
+}, 1000*60*5)
