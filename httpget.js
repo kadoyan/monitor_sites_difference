@@ -59,7 +59,7 @@ const detectDiff = function(name, method, url, type, elm, file) {
 				tweet = `${name}変化あり！ ${url}`
 			}
 			
-			fs.writeFile(FILE, current, (err) => {
+			fs.writeFile(file, current, (err) => {
 				if (err) throw err;
 			})
 			
