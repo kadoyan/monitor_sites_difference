@@ -1,11 +1,14 @@
 "use strict"
 
-let http = require("http")
-const url = "http://www.yodobashi.com/product/100000001003431566/"
+const http = require("http")
+const fs = require("fs")
 
-http.get(url, (res) => {
+const URL = "http://www.yodobashi.com/product/100000001003431566/"
+const ELM = "js_buyBoxMain"
+
+http.get(URL, (res) => {
 	const { statusCode } = res
-	const contentType = res.headers['content-type']
+	const contentType = res.headers["content-type"]
 	
 	let error
 	if (statusCode !== 200) {
@@ -16,10 +19,18 @@ http.get(url, (res) => {
 		res.resume()
 		return
 	}
-	res.setEncoding('utf8')
-	let rawData = ''
-	res.on('data', (chunk) => { rawData += chunk; })//データが来る度に蓄積させる
-	res.on('end', () => {//終わったら
-		console.log(rawData)
+	res.setEncoding("utf8")
+	let rawData = ""
+	res.on("data", (chunk) => {//データが来る度に蓄積させる
+		rawData += chunk
+	})
+	res.on("end", () => {//終わったら
+		const reg = new RegExp('<div\\sid=\\"'+ ELM +'\\b[^<]*(?:(?!<\\/div>)<[^<]*)*<\\/div>');
+		const target = rawData.match(reg)[0] || ""
+//console.log()
+		fs.writeFile("element.txt", target, function(err) {
+			if (err) throw err;
+			console.log('Saved!');
+		})
 	})
 })
