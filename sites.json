@@ -1,0 +1,14 @@
+[
+	{
+		"name": "ヨドバシ",
+		"url": "http://www.yodobashi.com/product/100000001003431566/",
+		"regexp": "<div\\sid=\\\"js_buyBoxMain\\b[^<]*(?:(?!<\\/div>)<[^<]*)*<\\/div>",
+		"file": "element.txt"
+	},
+	{
+		"name": "任天堂",
+		"url": "https://store.nintendo.co.jp/customize.html",
+		"regexp": "<span\\sclass=\\\"items\\\">HAC_S_KAYAA\\/.",
+		"file": "elementn.txt"
+	}
+]
