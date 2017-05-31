@@ -1,12 +1,14 @@
 "use strict"
 //
-//twitter_keys.json
-//{
-//	"consumer_key": "YOUR_VALIUE",
-//	"consumer_secret": "YOUR_VALIUE",
-//	"access_token_key": "YOUR_VALIUE",
-//	"access_token_secret": "YOUR_VALIUE"
-//}
+// twitter_keys.json
+/*
+{
+	"consumer_key": "YOUR_VALIUE",
+	"consumer_secret": "YOUR_VALIUE",
+	"access_token_key": "YOUR_VALIUE",
+	"access_token_secret": "YOUR_VALIUE"
+}
+*/
 
 const cron = require("node-cron")
 const fs = require("fs")
@@ -19,6 +21,7 @@ const Twitter = new TwitterPackage({
 	access_token_secret: twitterKeys.access_token_secret
 })
 
+//Get sites HTML
 const getHtml = (json) => {
 	for (const i in json) {
 		const site = json[i]
@@ -47,6 +50,7 @@ const getHtml = (json) => {
 	}
 }
 
+//The differences detection of the target part
 const detectDifference = (site, rawData) => {
 	const current = rawData.match(site.regexp)[0] || ""
 	let tweet = ""
@@ -83,6 +87,7 @@ const detectDifference = (site, rawData) => {
 	})
 }
 
+//Get current time
 const getCurrentTime = ()=> {
 	const now = new Date()
 	const hour = now.getHours()
