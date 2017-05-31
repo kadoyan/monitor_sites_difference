@@ -56,11 +56,8 @@ const detectDifference = (site, rawData) => {
 			throw err
 		}
 	}
-	fs.writeFile(site.file, current, (err) => {
-		if (err) throw err;
-	})
 	
-	if (previous !== current) {
+	if (previous !== "" && previous !== current) {
 		tweet = `Hey! Go and check ${site.name}! ${site.url}`
 	}
 	if (tweet !== "") {
@@ -74,6 +71,10 @@ const detectDifference = (site, rawData) => {
 		const now = getCurrentTime()
 		console.log(`${now} ${site.name} nope...`)
 	}
+	
+	fs.writeFile(site.file, current, (err) => {
+		if (err) throw err;
+	})
 }
 
 const getCurrentTime = ()=> {
