@@ -1,16 +1,22 @@
 "use strict"
 //
-// 
-//
+//twitter_keys.json
+//{
+//	"consumer_key": "YOUR_VALIUE",
+//	"consumer_secret": "YOUR_VALIUE",
+//	"access_token_key": "YOUR_VALIUE",
+//	"access_token_secret": "YOUR_VALIUE"
+//}
 
 const cron = require("node-cron")
 const fs = require("fs")
 const TwitterPackage = require("twitter")
+const twitterKeys = require("./twitter_keys.json")
 const Twitter = new TwitterPackage({
-	consumer_key: "X5q5gLw7RQpVPCmbwezFHinpz",
-	consumer_secret: "Z3UugebjA8FGRn76ir327YNd0bcEMZ4JECCc0LdzGaA3vnWVfq",
-	access_token_key: "3878921-aNrjw5Y82elzDvsGY8wovPjMk2MbMsAHuyLOW4tH9P",
-	access_token_secret: "IHH9YO7Fy9VJY2PnzFlWVK7jgmpabGLWpXXY8PErgnSTs"
+	consumer_key: twitterKeys.consumer_key,
+	consumer_secret: twitterKeys.consumer_secret,
+	access_token_key: twitterKeys.access_token_key,
+	access_token_secret: twitterKeys.access_token_secret
 })
 
 const getHtml = (json) => {
