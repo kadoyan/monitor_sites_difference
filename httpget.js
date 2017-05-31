@@ -3,10 +3,11 @@
 // twitter_keys.json
 /*
 {
-	"consumer_key": "YOUR_VALIUE",
-	"consumer_secret": "YOUR_VALIUE",
-	"access_token_key": "YOUR_VALIUE",
-	"access_token_secret": "YOUR_VALIUE"
+	"consumer_key": "YOUR_VALUE",
+	"consumer_secret": "YOUR_VALUE",
+	"access_token_key": "YOUR_VALUE",
+	"access_token_secret": "YOUR_VALUE",
+	"screen_name": "YOUR_VALUE"
 }
 */
 
@@ -72,7 +73,7 @@ const detectDifference = (site, rawData) => {
 	}
 	if (tweet !== "") {
 		Twitter.post('direct_messages/new', {
-			screen_name: "GetNSWonYodo",
+			screen_name: twitterKeys.screen_name,
 			text: tweet
 		}, function(err, tw, res) {
 			if (err) throw err;
