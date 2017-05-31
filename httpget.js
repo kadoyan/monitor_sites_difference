@@ -1,4 +1,7 @@
 "use strict"
+//
+// 
+//
 
 const cron = require("node-cron")
 const fs = require("fs")
@@ -28,10 +31,10 @@ const getHtml = (json) => {
 			}
 			res.setEncoding("utf8")
 			let rawData = ""
-			res.on("data", (chunk) => {//データが来る度に蓄積させる
+			res.on("data", (chunk) => {
 				rawData += chunk
 			})
-			res.on("end", () => {//終わったら
+			res.on("end", () => {
 				detectDifference(site, rawData)
 			})
 		})
@@ -40,19 +43,25 @@ const getHtml = (json) => {
 
 const detectDifference = (site, rawData) => {
 	const current = rawData.match(site.regexp)[0] || ""
+	let tweet = ""
 	let previous = ""
+	
 	try {
 		previous = fs.readFileSync(site.file).toString()
 	} catch (err) {
-		throw err
+		if (err.code === 'ENOENT') {
+			console.log(`${site.file}: File not found. Begin checking.`)
+			tweet = `${site.name}: Begin checking.`
+		} else {
+			throw err
+		}
 	}
 	fs.writeFile(site.file, current, (err) => {
 		if (err) throw err;
 	})
 	
-	let tweet = ""
 	if (previous !== current) {
-		tweet = `${site.name}変化あり！ ${site.url}`
+		tweet = `Hey! Go and check ${site.name}! ${site.url}`
 	}
 	if (tweet !== "") {
 		Twitter.post('direct_messages/new', {
@@ -63,8 +72,15 @@ const detectDifference = (site, rawData) => {
 		});
 	} else {
 		const now = getCurrentTime()
-		console.log(`${now} ${site.name}変化なし`)
+		console.log(`${now} ${site.name} nope...`)
 	}
+}
+
+const getCurrentTime = ()=> {
+	const now = new Date()
+	const hour = now.getHours()
+	const minute = now.getMinutes()
+	return `${hour}:${minute}`
 }
 
 fs.readFile("sites.json", (err, data) => {
