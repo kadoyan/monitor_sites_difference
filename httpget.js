@@ -22,6 +22,14 @@ const Twitter = new TwitterPackage({
 	access_token_secret: twitterKeys.access_token_secret
 })
 
+const tweetMsg = (tweet) => {
+	Twitter.post('direct_messages/new', {
+		screen_name: twitterKeys.screen_name,
+		text: tweet
+	}, function(err) {
+	});
+}
+
 //Get sites HTML
 const getHtml = (json) => {
 	for (const i in json) {
@@ -34,10 +42,10 @@ const getHtml = (json) => {
 			const contentType = res.headers["content-type"]
 			
 			if (statusCode !== 200) {
-				const err = new Error(`Request Failed. Status Code: ${statusCode}`)
-				throw err
-				res.resume()
-				return
+				const err = `${statusCode} ERROR: Something has happened on ${site.name}.${site.url}`//new Error(`Request Failed. Status Code: ${statusCode}`)
+				console.log(err)
+				tweetMsg(err)
+				res.pause()
 			}
 			res.setEncoding("utf8")
 			let rawData = ""
@@ -72,12 +80,15 @@ const detectDifference = (site, rawData) => {
 		tweet = `Hey! Go and check ${site.name}! ${site.url}`
 	}
 	if (tweet !== "") {
+		tweetMsg(tweet)
+/*
 		Twitter.post('direct_messages/new', {
 			screen_name: twitterKeys.screen_name,
 			text: tweet
 		}, function(err, tw, res) {
 			if (err) throw err;
 		});
+*/
 	} else {
 		const now = getCurrentTime()
 		console.log(`${now} ${site.name} nope...`)
@@ -99,7 +110,8 @@ const getCurrentTime = ()=> {
 fs.readFile("sites.json", (err, data) => {
 	if (err) throw err
 	const json = JSON.parse(data)
-	cron.schedule('*/3 * * * *', function(){
+	getHtml(json)
+	cron.schedule('*/2 * * * *', function(){
 		getHtml(json)
 	})
 })
