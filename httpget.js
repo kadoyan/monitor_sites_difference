@@ -1,6 +1,6 @@
 "use strict"
 //
-// twitter_keys.json
+// Need a JSON file "twitter_keys.json" at the same directory.
 /*
 {
 	"consumer_key": "YOUR_VALUE",
