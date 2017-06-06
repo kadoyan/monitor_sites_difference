@@ -12,7 +12,7 @@ It has twitter API Keys.
 	"consumer_secret": "YOUR_VALUE",
 	"access_token_key": "YOUR_VALUE",
 	"access_token_secret": "YOUR_VALUE",
-	"screen_name": "YOUR_VALUE"
+	"screen_name": "The twitter user name receiving direct messages."
 }
 ```
 
