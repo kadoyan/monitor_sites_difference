@@ -91,7 +91,7 @@ const detectDifference = (site, rawData) => {
 */
 	} else {
 		const now = getCurrentTime()
-		console.log(`${now} ${site.name} nope...`)
+		console.log(`${now} ${site.name} nothing changed.`)
 	}
 	
 	fs.writeFile(site.file, current, (err) => {
