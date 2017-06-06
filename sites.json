@@ -1,14 +1,26 @@
 [
+        {
+                "name": "ヨドバシ Switch本体",
+                "url": "http://www.yodobashi.com/product/100000001003431566/",
+                "regexp": "<div\\sid=\\\"js_buyBoxMain\\b[^<]*(?:(?!<\\/div>)<[^<]*)*<\\/div>",
+                "file": "element_yodobashi.txt"
+        },
 	{
-		"name": "ヨドバシ",
-		"url": "http://www.yodobashi.com/product/100000001003431566/",
+		"name": "ヨドバシ Joy-Con充電グリップ",
+		"url": "http://www.yodobashi.com/product/100000001003431571/",
 		"regexp": "<div\\sid=\\\"js_buyBoxMain\\b[^<]*(?:(?!<\\/div>)<[^<]*)*<\\/div>",
-		"file": "element_yodobashi.txt"
+		"file": "element_yodobashi_joycon.txt"
 	},
 	{
 		"name": "任天堂",
 		"url": "https://store.nintendo.co.jp/customize.html",
 		"regexp": "<span\\sclass=\\\"items\\\">HAC_S_KAYAA\\/.",
 		"file": "element_nintendo.txt"
-	}
+	},
+        {
+                "name": "Amazon.co.jp",
+                "url": "https://www.amazon.co.jp/gp/search/ref=sr_hi_3?rh=n%3A637394%2Cn%3A4731377051%2Cn%3A4731379051%2Ck%3ANintendo+Switch&ie=UTF8&emi=AN1VRQENFRJN5",
+                "regexp": "<div\\sid=\\\"centerPlus\\b[^<]*(?:(?!<\\/div>)<[^<]*)*<\\/div>",
+                "file": "element_amazon.txt"
+        }
 ]
