@@ -1,3 +1,5 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 # Monitor sites difference
 Automatically monitoring the differences of website at every few minutes and reporting you via twitter message.
 
