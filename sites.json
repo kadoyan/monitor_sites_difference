@@ -13,7 +13,7 @@
 	},
 	{
 		"name": "任天堂",
-		"url": "https://store.nintendo.co.jp/customize.htmlx",
+		"url": "https://store.nintendo.co.jp/customize.html",
 		"regexp": "<span\\sclass=\\\"items\\\">HAC_S_KAYAA\\/.",
 		"file": "element_nintendo.txt"
 	},
