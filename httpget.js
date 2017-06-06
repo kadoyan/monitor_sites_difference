@@ -40,15 +40,16 @@ const getHtml = (json) => {
 		http.get(site.url, (res) => {
 			const { statusCode } = res
 			const contentType = res.headers["content-type"]
+			let rawData = ""
 			
 			if (statusCode !== 200) {
 				const err = `${statusCode} ERROR: Something has happened on ${site.name}.${site.url}`//new Error(`Request Failed. Status Code: ${statusCode}`)
 				console.log(err)
-				tweetMsg(err)
 				res.pause()
+				rawData = err
+				detectDifference(site, rawData)
 			}
 			res.setEncoding("utf8")
-			let rawData = ""
 			res.on("data", (chunk) => {
 				rawData += chunk
 			})
@@ -61,10 +62,14 @@ const getHtml = (json) => {
 
 //The differences detection of the target part
 const detectDifference = (site, rawData) => {
-	const current = rawData.match(site.regexp)[0] || ""
+	let current = ""
+	if (rawData.match(site.regexp) !== null) {
+		current = rawData.match(site.regexp)[0]
+	} else {
+		current = rawData
+	}
 	let tweet = ""
-	let previous = ""
-	
+	let previous = ""	
 	try {
 		previous = fs.readFileSync(site.file).toString()
 	} catch (err) {
@@ -76,19 +81,14 @@ const detectDifference = (site, rawData) => {
 		}
 	}
 	
-	if (previous !== "" && previous !== current) {
+	if (previous !== "" && previous !== current && current !== rawData) {
 		tweet = `Hey! Go and check ${site.name}! ${site.url}`
+	}
+	if (current === rawData) {
+		tweetMsg(current)
 	}
 	if (tweet !== "") {
 		tweetMsg(tweet)
-/*
-		Twitter.post('direct_messages/new', {
-			screen_name: twitterKeys.screen_name,
-			text: tweet
-		}, function(err, tw, res) {
-			if (err) throw err;
-		});
-*/
 	} else {
 		const now = getCurrentTime()
 		console.log(`${now} ${site.name} nothing changed.`)
