@@ -111,7 +111,7 @@ fs.readFile("sites.json", (err, data) => {
 	if (err) throw err
 	const json = JSON.parse(data)
 	getHtml(json)
-	cron.schedule('*/2 * * * *', function(){
+	cron.schedule('*/4 * * * *', function(){
 		getHtml(json)
 	})
 })
