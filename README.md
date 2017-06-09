@@ -30,5 +30,5 @@ Edit the JSON file named "sites.json".
 
 Start this script.
 ```
-node index.js
+node index.js sites.json
 ```
