@@ -1,15 +1,4 @@
 "use strict"
-//
-// Need a JSON file "twitter_keys.json" at the same directory.
-/*
-{
-	"consumer_key": "YOUR_VALUE",
-	"consumer_secret": "YOUR_VALUE",
-	"access_token_key": "YOUR_VALUE",
-	"access_token_secret": "YOUR_VALUE",
-	"screen_name": "YOUR_VALUE"
-}
-*/
 
 const cron = require("node-cron")
 const fs = require("fs")
@@ -21,6 +10,7 @@ const Twitter = new TwitterPackage({
 	access_token_key: twitterKeys.access_token_key,
 	access_token_secret: twitterKeys.access_token_secret
 })
+const sitesJson = process.argv[2] || "./sites.json"
 
 const tweetMsg = (tweet) => {
 	Twitter.post('direct_messages/new', {
@@ -107,7 +97,7 @@ const getCurrentTime = ()=> {
 	return `${hour}:${minute}`
 }
 
-fs.readFile("sites.json", (err, data) => {
+fs.readFile(sitesJson, (err, data) => {
 	if (err) throw err
 	const json = JSON.parse(data)
 	getHtml(json)
