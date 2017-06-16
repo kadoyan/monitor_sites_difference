@@ -11,6 +11,7 @@ const Twitter = new TwitterPackage({
 	access_token_secret: twitterKeys.access_token_secret
 })
 const sitesJson = process.argv[2] || "./sites.json"
+const targetText = {}
 
 const tweetMsg = (tweet) => {
 	Twitter.post('direct_messages/new', {
@@ -59,16 +60,12 @@ const detectDifference = (site, rawData) => {
 		current = rawData
 	}
 	let tweet = ""
-	let previous = ""	
-	try {
-		previous = fs.readFileSync(site.file).toString()
-	} catch (err) {
-		if (err.code === 'ENOENT') {
-			console.log(`${site.file}: File not found. Begin checking.`)
-			tweet = `${site.name}: Begin checking.`
-		} else {
-			throw err
-		}
+	let previous = ""
+	if (typeof targetText[site.id] !== "undefined") {
+		previous = targetText[site.id]
+	} else {
+		console.log(`${site.id}: New data. Begin checking.`)
+		tweet = `${site.name}: Begin checking.`
 	}
 	
 	if (previous !== "" && previous !== current && current !== rawData) {
@@ -84,9 +81,7 @@ const detectDifference = (site, rawData) => {
 		console.log(`${now} ${site.name} nothing changed.`)
 	}
 	
-	fs.writeFile(site.file, current, (err) => {
-		if (err) throw err;
-	})
+	targetText[site.id] = current
 }
 
 //Get current time
@@ -101,7 +96,7 @@ fs.readFile(sitesJson, (err, data) => {
 	if (err) throw err
 	const json = JSON.parse(data)
 	getHtml(json)
-	cron.schedule('*/4 * * * *', function(){
+	cron.schedule('*/1 * * * *', function(){
 		getHtml(json)
 	})
 })
