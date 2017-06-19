@@ -14,9 +14,9 @@ const sitesJson = process.argv[2] || "./sites.json"
 const targetText = {}
 
 const tweetMsg = (tweet) => {
-	Twitter.post('direct_messages/new', {
+	Twitter.post('statuses/update', {
 		screen_name: twitterKeys.screen_name,
-		text: tweet
+		status: tweet
 	}, function(err) {
 	});
 }
@@ -34,7 +34,8 @@ const getHtml = (json) => {
 			let rawData = ""
 			
 			if (statusCode !== 200) {
-				const err = `${statusCode} ERROR: Something has happened on ${site.name}.${site.url}`//new Error(`Request Failed. Status Code: ${statusCode}`)
+				const currentTime = getCurrentTime()
+				const err = `${currentTime}確認、${statusCode} ERROR: サイトにエラー発生中…。 ${site.url} #NintendoSwitch`//new Error(`Request Failed. Status Code: ${statusCode}`)
 				console.log(err)
 				res.pause()
 				rawData = err
@@ -53,6 +54,7 @@ const getHtml = (json) => {
 
 //The differences detection of the target part
 const detectDifference = (site, rawData) => {
+	const currentTime = getCurrentTime()
 	let current = ""
 	if (rawData.match(site.regexp) !== null) {
 		current = rawData.match(site.regexp)[0]
@@ -64,12 +66,13 @@ const detectDifference = (site, rawData) => {
 	if (typeof targetText[site.id] !== "undefined") {
 		previous = targetText[site.id]
 	} else {
-		console.log(`${site.id}: New data. Begin checking.`)
-		tweet = `${site.name}: Begin checking.`
+		console.log(`${site.id}: Begin checking.`)
+		tweet = `${currentTime}、${site.name}の在庫チェックを開始しました。 ${site.url} #NintendoSwitch`
 	}
 	
 	if (previous !== "" && previous !== current && current !== rawData) {
-		tweet = `Hey! Go and check ${site.name}! ${site.url}`
+		console.log(`${site.id}: A difference is detected!`)
+		tweet = `${currentTime}確認、${site.name}に変化あり？サイトをチェック！ ${site.url} #NintendoSwitch`
 	}
 	if (current === rawData) {
 		tweetMsg(current)
@@ -89,14 +92,14 @@ const getCurrentTime = ()=> {
 	const now = new Date()
 	const hour = now.getHours()
 	const minute = now.getMinutes()
-	return `${hour}:${minute}`
+	return `${hour}時${minute}分`//hour:minute
 }
 
 fs.readFile(sitesJson, (err, data) => {
 	if (err) throw err
 	const json = JSON.parse(data)
 	getHtml(json)
-	cron.schedule('*/1 * * * *', function(){
+	cron.schedule('*/3 * * * *', function(){
 		getHtml(json)
 	})
 })
